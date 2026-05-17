@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P@T | Školski Digitalni Časopis</title>
+    <!-- Google Fonts & FontAwesome for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- Ekstrakt i Reset --- */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-dark: #111111;
+            --text-main: #111111;
+            --text-muted: #666666;
+            --accent-blue: #0f2d59; /* Profesionalna tamno plava za detalje */
+            --border-color: #e5e5e5;
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* --- Navigacija --- */
+        header {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--bg-dark);
+            position: relative;
+        }
+        
+        .logo span {
+            color: var(--accent-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+            position: relative;
+            padding-bottom: 4px;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--bg-dark);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* --- Stranice (Sistemski Router) --- */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+            min-height: 80vh;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Hero Sekcija --- */
+        .hero {
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            padding: 6rem 2rem;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-blue);
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #cccccc;
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        /* --- Glavni Layout --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            border-left: 5px solid var(--bg-dark);
+            padding-left: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- Istaknuti Članak (Featured) --- */
+        .featured-card {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .featured-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+
+        .featured-img {
+            height: 100%;
+            min-height: 400px;
+            object-fit: cover;
+        }
+
+        .featured-content {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .category-badge {
+            background: var(--bg-dark);
+            color: #fff;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            align-self: flex-start;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-badge.blue-tag {
+            background: var(--accent-blue);
+        }
+
+        .featured-content h3 {
+            font-size: 2.2rem;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .meta-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* --- Mreža Članaka --- */
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .article-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.05);
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            overflow: hidden;
+            padding-top: 60%; /* 16:9 Aspect Ratio */
+        }
+
+        .card-img-wrapper img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .article-card:hover .card-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-body h3 {
+            font-size: 1.35rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .card-body p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* --- Filteri na stranici Članci --- */
+        .filter-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--bg-dark);
+            color: white;
+            border-color: var(--bg-dark);
+        }
+
+        /* --- O nama Stranica --- */
+        .about-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-text p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .stat-box {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-box h4 {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        /* --- Zasebna Stranica Članka --- */
+        .single-article-view {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-bottom: 3rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: var(--bg-dark);
+            color: white;
+        }
+
+        .article-header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin: 1.5rem 0;
+            letter-spacing: -1px;
+        }
+
+        .article-cover {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            border-radius: var(--radius);
+            margin-bottom: 3rem;
+        }
+
+        .article-content {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: #222;
+        }
+
+        .article-content p {
+            margin-bottom: 2rem;
+        }
+
+        .related-section {
+            border-top: 1px solid var(--border-color);
+            margin-top: 5rem;
+            padding-top: 4rem;
+        }
+
+        /* --- Newsletter Sekcija --- */
+        .newsletter {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+
+        .newsletter h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .newsletter p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+            gap: 0.5rem;
+        }
+
+        .newsletter-form input {
+            flex-grow: 1;
+            padding: 1rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .newsletter-form button {
+            background: var(--bg-dark);
+            color: white;
+            border: none;
+            padding: 0 2rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .newsletter-form button:hover {
+            background: #333;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: var(--bg-dark);
+            color: white;
+            padding: 4rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-socials a {
+            font-size: 1.5rem;
+            transition: var(--transition);
+            color: #aaa;
+        }
+
+        .footer-socials a:hover {
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* --- Responzivnost --- */
+        @media (max-width: 968px) {
+            .featured-card {
+                grid-template-columns: 1fr;
+            }
+            .about-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .article-header h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .hero h1 {
+                font-size: 3rem;
+            }
+            .newsletter-form {
+                flex-direction: column;
+            }
+            .newsletter-form button {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigacijski Meni -->
+    <header>
+        <nav class="nav-container">
+            <a href="#" class="logo" onclick="navigateTo('pocetna')">P<span>@</span>T</a>
+            <ul class="nav-links">
+                <li><a href="#" id="link-pocetna" class="active" onclick="navigateTo('pocetna')">Početna</a></li>
+                <li><a href="#" id="link-clanci" onclick="navigateTo('clanci')">Članci</a></li>
+                <li><a href="#" id="link-onama" onclick="navigateTo('onama')">O Nama</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- POČETNA STRANICA -->
+    <main id="page-pocetna" class="page active">
+        <section class="hero">
+            <h1>P@T</h1>
+            <p>Glas učenika, priče iz hodnika i tehnologija budućnosti. Vaš prozor u svijet srednjoškolskog novinarstva.</p>
+        </section>
+
+        <section class="container">
+            <h2 class="section-title">Istaknuta Priča</h2>
+            <div id="featured-article-container"></div>
+
+            <h2 class="section-title">Najnoviji Članci</h2>
+            <div class="articles-grid" id="latest-articles-grid"></div>
+        </section>
+    </main>
+
+    <!-- STRANICA ČLANCI -->
+    <main id="page-clanci" class="page">
+        <section class="container">
+            <h2 class="section-title">Svi Članci</h2>
+            
+            <div class="filter-container">
+                <button class="filter-btn active" onclick="filterArticles('Sve')">Sve</button>
+                <button class="filter-btn" onclick="filterArticles('School News')">Školske Vijesti</button>
+                <button class="filter-btn" onclick="filterArticles('Technology')">Tehnologija</button>
+                <button class="filter-btn" onclick="filterArticles('Sports')">Sport</button>
+                <button class="filter-btn" onclick="filterArticles('Events')">Događanja</button>
+            </div>
+
+            <div class="articles-grid" id="all-articles-grid"></div>
+        </section>
+    </main>
+
+    <!-- STRANICA O NAMA -->
+    <main id="page-onama" class="page">
+        <section class="container">
+            <div class="about-layout">
+                <div class="about-text">
+                    <h2>O Časopisu P@T</h2>
+                    <p>P@T je nezavisni digitalni časopis koji vode isključivo učenici naše škole. Naša misija je pružiti platformu mladim, kreativnim umovima koji žele istraživati, pisati i informirati svoje vršnjake o stvarima koje su doista važne.</p>
+                    <p>Od najnovijih tehnoloških trendova koji utječu na obrazovanje, preko sportskih postignuća naših timova, pa sve do dubokih priča iz školskih klupa — mi pokrivamo sve kutove.</p>
+                    
+                    <div class="about-stats">
+                        <div class="stat-box">
+                            <h4>6+</h4>
+                            <p>Autora</p>
+                        </div>
+                        <div class="stat-box">
+                            <h4>24/7</h4>
+                            <p>Vijesti</p>
+                        </div>
+                        <div class="stat-box">
+                            <h4>100%</h4>
+                            <p>Učenički trud</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=600&q=80" style="border-radius: var(--radius); filter: grayscale(100%); border: 1px solid var(--border-color);" alt="Uredništvo">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ZASEBNA STRANICA ZA JEDAN ČLANAK -->
+    <main id="page-artikl" class="page">
+        <div class="single-article-view">
+            <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Natrag na vijesti</button>
+            
+            <article>
+                <div class="article-header">
+                    <span class="category-badge blue-tag" id="article-page-category">Kategorija</span>
+                    <h1 id="article-page-title">Naslov Članka</h1>
+                    <div class="meta-info">
+                        <span id="article-page-author"><i class="far fa-user"></i> Autor</span> &nbsp;|&nbsp; 
+                        <span id="article-page-date"><i class="far fa-calendar"></i> Datum</span>
+                    </div>
+                </div>
+                
+                <img id="article-page-img" src="" alt="Cover" class="article-cover">
+                
+                <div class="article-content" id="article-page-text">
+                    <!-- Sadržaj -->
+                </div>
+            </article>
+
+            <!-- Povezani članci -->
+            <div class="related-section">
+                <h3 class="section-title">Povezani Članci</h3>
+                <div class="articles-grid" id="related-articles-grid"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- NEWSLETTER SEKCIJA -->
+    <section class="newsletter">
+        <div class="container" style="padding: 0;">
+            <h2>Pretplatite se na P@T bilten</h2>
+            <p>Primajte tjedni pregled najboljih učeničkih priča i događaja direktno u vaš sandučić.</p>
+            <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Hvala na pretplati!');">
+                <input type="email" placeholder="Vaša e-mail adresa" required>
+                <button type="submit">Prijavi se</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div>
+                <p style="font-weight: 800; font-size: 1.5rem;">P<span>@</span>T</p>
+                <p style="color: #aaa; font-size: 0.9rem; margin-top: 0.5rem;">© 2026 Školski digitalni časopis. Sva prava pridržana.</p>
+            </div>
+            <div class="footer-socials">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT: Podaci i Logika -->
+    <script>
+        const articles = [
+            {
+                id: 1,
+                title: "Kako umjetna inteligencija mijenja pisanje domaćih zadaća?",
+                summary: "Istražili smo kako se naša škola nosi s novim ChatGPT alatima i što profesori zapravo misle o tome.",
+                content: "<p>Sve veća prisutnost generativne umjetne inteligencije u svakodnevnom životu donijela je velike promjene i u školske klupe. Dok jedni smatraju da AI uništava kritičko razmišljanje, naša anketa pokazuje da učenici koriste ove alate prvenstveno za strukturiranje eseja i dobivanje ideja.</p><p>Razgovarali smo s profesoricom informatike koja ističe: 'AI se ne može ignorirati. Moramo naučiti učenike kako ga koristiti etički i kao pomoćno sredstvo, a ne kao zamjenu za rad.' U budućnosti možemo očekivati potpuno nove formate testiranja znanja.</p>",
+                category: "Technology",
+                author: "Marko Horvat",
+                date: "15. Svibnja 2026.",
+                img: "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80",
+                featured: true
+            },
+            {
+                id: 2,
+                title: "Veliki uspjeh našeg košarkaškog tima na županijskom natjecanju",
+                summary: "Nakon napete završnice i produžetaka, naši momci su osigurali zlatnu medalju i plasman na državno prvenstvo.",
+                content: "<p>U prepunoj dvorani odigrala se drama kakvu školska liga dugo nije vidjela. Naš tim gubio je s 5 razlike u zadnjoj minuti, no nevjerojatnom serijom trica uspjeli su izboriti produžetke i na kraju slaviti pobjedu.</p><p>Kapetan tima izjavio je nakon utakmice: 'Ovo je rezultat višemjesečnog truda i ranih jutarnjih treninga prije nastave. Hvala publici na nevjerojatnoj podršci!' Državno prvenstvo nas čeka već idući mjesec.</p>",
+                category: "Sports",
+                author: "Luka Marić",
+                date: "14. Svibnja 2026.",
+                img: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=800&q=80",
+                featured: false
+            },
+            {
+                id: 3,
+                title: "Proljetni školski sajam: Prikupljeno rekordno mnogo sredstava",
+                summary: "Tradicionalni humanitarni sajam ove je godine nadmašio sva očekivanja posjetitelja i organizatora.",
+                content: "<p>Ove godine dvorište naše škole pretvorilo se u pravi mali festival kreativnosti, rukotvorina i gastronomske ponude. Svaki je razred imao svoj štand, a borba za najkreativniji proizvod bila je tijesna.</p><p>Sav prikupljeni prihod ove je godine preusmjeren lokalnoj dječjoj bolnici. Ravnatelj je izrazio izniman ponos na solidarnost i organizacijske vještine koje su pokazali svi sudionici sajma.</p>",
+                category: "Events",
+                author: "Ana Kovačić",
+                date: "12. Svibnja 2026.",
+                img: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80",
+                featured: false
+            },
+            {
+                id: 4,
+                title: "Novi pravilnik o mobitelima: Pametno korištenje ili potpuna zabrana?",
+                summary: "Uredništvo donosi detaljnu analizu novih pravila ponašanja koja stupaju na snagu od idućeg polugodišta.",
+                content: "<p>Rasprava o korištenju mobilnih telefona tijekom nastave ponovno se zahuktala. Vijeće učenika iznijelo je prijedlog po kojem bi se mobiteli koristili isključivo uz dopuštenje profesora u edukacijske svrhe.</p><p>Većina učenika s kojima smo razgovarali smatra da bi potpuna zabrana izazvala kontraefekt, dok uvođenje 'zona bez ekrana' tijekom odmora može potaknuti bolju međusobnu socijalizaciju.</p>",
+                category: "School News",
+                author: "Ema Vidović",
+                date: "10. Svibnja 2026.",
+                img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80",
+                featured: false
+            },
+            {
+                id: 5,
+                title: "Intervju s mladim programerom: Kako napraviti aplikaciju s 17 godina?",
+                summary: "Ivan iz 3.G razreda razvio je aplikaciju za lakše snalaženje i raspored u našoj školi koja broji već 500 korisnika.",
+                content: "<p>Dok većina slobodno vrijeme provodi na društvenim mrežama, Ivan uči programske jezike. Njegova aplikacija 'Školski Vodič' rješava problem izgubljenih prvašića i čestih promjena učionica.</p><p>'Ideja je došla iz čiste frustracije kada bih zakasnio jer nisam znao gdje je kabinet fizike. Trebalo mi je oko tri mjeseca učenja i kodiranja da sve proradi', objašnjava Ivan koji već planira nadogradnje.</p>",
+                category: "Technology",
+                author: "Marko Horvat",
+                date: "08. Svibnja 2026.",
+                img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
+                featured: false
+            },
+            {
+                id: 6,
+                title: "Najava: Školski bendovi spremni za rock spektakl u petak",
+                summary: "Tri školska benda odmjerit će snage na velikom koncertu u amfiteatru. Očekuje se odlična atmosfera.",
+                content: "<p>Pripremite se za najglasniji događaj sezone! U petak s početkom u 19 sati, školski bendovi izvest će obrade poznatih rock hitova, ali i autorske pjesme na kojima rade već mjesecima.</p><p>Stručni žiri sastavljen od profesora glazbene kulture i bivših učenika odabrat će najbolji sastav koji osvaja snimanje singla u profesionalnom studiju. Vidimo se tamo!</p>",
+                category: "Events",
+                author: "Lana Jurić",
+                date: "05. Svibnja 2026.",
+                img: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=800&q=80",
+                featured: false
+            }
+        ];
+
+        let previousPage = 'pocetna';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderHomepage();
+            renderArticlesPage(articles);
+        });
+
+        function navigateTo(pageId) {
+            const currentPage = document.querySelector('.page.active');
+            if (currentPage && currentPage.id !== 'page-artikl') {
+                previousPage = currentPage.id.replace('page-', '');
+            }
+
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) targetPage.classList.add('active');
+
+            const activeLink = document.getElementById(`link-${pageId}`);
+            if (activeLink) activeLink.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderHomepage() {
+            const featured = articles.find(a => a.featured) || articles[0];
+            const featuredContainer = document.getElementById('featured-article-container');
+            
+            featuredContainer.innerHTML = `
+                <div class="featured-card" onclick="openArticle(${featured.id})">
+                    <img src="${featured.img}" alt="Featured Image" class="featured-img" style="filter: grayscale(100%);">
+                    <div class="featured-content">
+                        <span class="category-badge">${featured.category}</span>
+                        <h3>${featured.title}</h3>
+                        <p class="meta-info">Autor: ${featured.author} | ${featured.date}</p>
+                        <p style="color: var(--text-muted);">${featured.summary}</p>
+                    </div>
+                </div>
+            `;
+
+            const latestGrid = document.getElementById('latest-articles-grid');
+            latestGrid.innerHTML = '';
+            articles.filter(a => !a.featured).forEach(art => {
+                latestGrid.appendChild(createCard(art));
+            });
+        }
+
+        function renderArticlesPage(data) {
+            const grid = document.getElementById('all-articles-grid');
+            grid.innerHTML = '';
+            data.forEach(art => {
+                grid.appendChild(createCard(art));
+            });
+        }
+
+        function createCard(art) {
+            const card = document.createElement('div');
+            card.className = 'article-card';
+            card.onclick = () => openArticle(art.id);
+            card.innerHTML = `
+                <div class="card-img-wrapper">
+                    <img src="${art.img}" alt="${art.title}" style="filter: grayscale(100%);">
+                </div>
+                <div class="card-body">
+                    <span class="category-badge blue-tag" style="font-size:0.65rem; margin-bottom: 0.8rem;">${art.category}</span>
+                    <h3>${art.title}</h3>
+                    <p>${art.summary}</p>
+                    <div class="meta-info" style="margin-top:auto; margin-bottom:0; padding-top:1rem;">
+                        <span><i class="far fa-calendar"></i> ${art.date}</span>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function filterArticles(category) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                const text = btn.textContent.trim();
+                if((text === 'Školske Vijesti' && category === 'School News') ||
+                   (text === 'Tehnologija' && category === 'Technology') ||
+                   (text === 'Sport' && category === 'Sports') ||
+                   (text === 'Događanja' && category === 'Events') ||
+                   (text === 'Sve' && category === 'Sve')) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            if (category === 'Sve') {
+                renderArticlesPage(articles);
+            } else {
+                const filtered = articles.filter(a => a.category === category);
+                renderArticlesPage(filtered);
+            }
+        }
+
+        function openArticle(id) {
+            const art = articles.find(a => a.id === id);
+            if (!art) return;
+
+            document.getElementById('article-page-category').textContent = art.category;
+            document.getElementById('article-page-title').textContent = art.title;
+            document.getElementById('article-page-author').innerHTML = `<i class="far fa-user"></i> Autor: ${art.author}`;
+            document.getElementById('article-page-date').innerHTML = `<i class="far fa-calendar"></i> ${art.date}`;
+            
+            const imgElement = document.getElementById('article-page-img');
+            imgElement.src = art.img;
+            imgElement.style.filter = "grayscale(100%)";
+
+            document.getElementById('article-page-text').innerHTML = art.content;
+
+            const relatedGrid = document.getElementById('related-articles-grid');
+            relatedGrid.innerHTML = '';
+            const related = articles.filter(a => a.category === art.category && a.id !== art.id);
+            
+            if (related.length > 0) {
+                related.forEach(r => relatedGrid.appendChild(createCard(r)));
+            } else {
+                articles.filter(a => a.id !== art.id).slice(0, 2).forEach(r => relatedGrid.appendChild(createCard(r)));
+            }
+
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById('page-artikl').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goBack() {
+            navigateTo(previousPage);
+        }
+    </script>
+</body>
+</html>
